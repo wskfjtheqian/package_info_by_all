@@ -56,7 +56,7 @@ void PackageInfoByAllPlugin::HandleMethodCall(
   // and
   // https://github.com/flutter/engine/tree/master/shell/platform/glfw/client_wrapper/include/flutter
   // for the relevant Flutter APIs.
-  if (method_call.method_name().compare("getPlatformVersion") == 0) {
+  if (method_call.method_name().compare("getAll") == 0) {
     struct utsname uname_data = {};
     uname(&uname_data);
     std::ostringstream version_stream;
