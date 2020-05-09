@@ -8,12 +8,17 @@ public class PackageInfoByAllPlugin: NSObject, FlutterPlugin {
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    switch call.method {
-    case "getPlatformVersion":
-      result("macOS " + ProcessInfo.processInfo.operatingSystemVersionString)
-    default:
-      result(FlutterMethodNotImplemented)
-    }
-  }
+   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+     if(call.method == "getAll"){
+         let airportsDic:Dictionary<String,Any> = [
+             "appName":  Bundle.main.infoDictionary?["CFBundleDisplayName"]as Any,
+             "packageName": Bundle.main.bundleIdentifier as Any,
+             "version":Bundle.main.infoDictionary?["CFBundleShortVersionString"] as Any,
+             "buildNumber": Bundle.main.infoDictionary?["CFBundleVersion"]as Any,
+         ]
+         result(airportsDic)
+     }else{
+         result(FlutterMethodNotImplemented)
+     }
+   }
 }

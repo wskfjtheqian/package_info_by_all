@@ -9,24 +9,16 @@ public class SwiftPackageInfoByAllPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    result("iOS " + UIDevice.current.systemVersion)
+    if(call.method == "getAll"){
+        let airportsDic:Dictionary<String,Any> = [
+            "appName":  Bundle.main.infoDictionary?["CFBundleDisplayName"]as Any,
+            "packageName": Bundle.main.bundleIdentifier as Any,
+            "version":Bundle.main.infoDictionary?["CFBundleShortVersionString"] as Any,
+            "buildNumber": Bundle.main.infoDictionary?["CFBundleVersion"]as Any,
+        ]
+        result(airportsDic)
+    }else{
+        result(FlutterMethodNotImplemented)
+    }
   }
-
-
-//   - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-//     if ([call.method isEqualToString:@"getAll"]) {
-//       result(@{
-//         @"appName" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
-//             ?: [NSNull null],
-//         @"packageName" : [[NSBundle mainBundle] bundleIdentifier] ?: [NSNull null],
-//         @"version" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]
-//             ?: [NSNull null],
-//         @"buildNumber" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]
-//             ?: [NSNull null],
-//       });
-//     } else {
-//       result(FlutterMethodNotImplemented);
-//     }
-//   }
-
 }
