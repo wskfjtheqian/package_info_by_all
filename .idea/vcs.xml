@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/example" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/example/linux/flutter/ephemeral/.plugin_symlinks/package_info_by_all" vcs="Git" />
+  </component>
+</project>
