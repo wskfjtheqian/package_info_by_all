@@ -1,8 +1,6 @@
 name: package_info_by_all
-description: A new flutter plugin project.
-version: 0.0.1
-author:
-homepage:
+description: get package info.
+version: 1.0.1
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
