@@ -16,6 +16,11 @@ extern "C" {
 FLUTTER_PLUGIN_EXPORT void PackageInfoByAllPluginRegisterWithRegistrar(
     FlutterDesktopPluginRegistrarRef registrar);
 
+extern const char *kAppName;
+extern const char *kPackageName;
+extern const char *kVersion;
+extern const char *kBuildNumber;
+
 #if defined(__cplusplus)
 }  // extern "C"
 #endif

@@ -6,6 +6,6 @@ PLUGIN_NAME=package_info_by_all
 # Any files other than the plugin class files that need to be compiled.
 EXTRA_SOURCES=
 # Extra flags (e.g., for library dependencies).
-EXTRA_CXXFLAGS=
+EXTRA_CXXFLAGS= -gdwarf-2
 EXTRA_CPPFLAGS=
 EXTRA_LDFLAGS=
