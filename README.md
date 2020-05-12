@@ -1,6 +1,6 @@
 # package_info_by_all
 
-Get package info ,support(android,ios,web,mac,linux)
+Get package info ,support(android,ios,web,mac,linux,windows)
 
 ## Getting Started
 
