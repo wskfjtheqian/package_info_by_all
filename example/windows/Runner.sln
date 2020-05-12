@@ -6,11 +6,17 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runner", "Runner.vcxproj", "{5A827760-CF8B-408A-99A3-B6C0AD2271E7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{6419BF13-6ECD-4CD2-9E85-E566A1F03F8F} = {6419BF13-6ECD-4CD2-9E85-E566A1F03F8F}
+		{39F03DE9-5064-44F3-85B3-39560EF78222} = {39F03DE9-5064-44F3-85B3-39560EF78222}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Flutter Build", "FlutterBuild.vcxproj", "{6419BF13-6ECD-4CD2-9E85-E566A1F03F8F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Flutter Plugins", "Flutter Plugins", "{5C2E738A-1DD3-445A-AAC8-EEB9648DD07C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "package_info_by_all", "Flutter\ephemeral\.plugin_symlinks\package_info_by_all\windows\plugin.vcxproj", "{39F03DE9-5064-44F3-85B3-39560EF78222}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6419BF13-6ECD-4CD2-9E85-E566A1F03F8F} = {6419BF13-6ECD-4CD2-9E85-E566A1F03F8F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,13 +37,20 @@ Global
 		{6419BF13-6ECD-4CD2-9E85-E566A1F03F8F}.Profile|x64.Build.0 = Profile|x64
 		{6419BF13-6ECD-4CD2-9E85-E566A1F03F8F}.Release|x64.ActiveCfg = Release|x64
 		{6419BF13-6ECD-4CD2-9E85-E566A1F03F8F}.Release|x64.Build.0 = Release|x64
+		{39F03DE9-5064-44F3-85B3-39560EF78222}.Debug|x64.ActiveCfg = Debug|x64
+		{39F03DE9-5064-44F3-85B3-39560EF78222}.Debug|x64.Build.0 = Debug|x64
+		{39F03DE9-5064-44F3-85B3-39560EF78222}.Profile|x64.ActiveCfg = Profile|x64
+		{39F03DE9-5064-44F3-85B3-39560EF78222}.Profile|x64.Build.0 = Profile|x64
+		{39F03DE9-5064-44F3-85B3-39560EF78222}.Release|x64.ActiveCfg = Release|x64
+		{39F03DE9-5064-44F3-85B3-39560EF78222}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{39F03DE9-5064-44F3-85B3-39560EF78222} = {5C2E738A-1DD3-445A-AAC8-EEB9648DD07C}
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8A69CB0-A974-4774-9EBD-1E5EECACD186}
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 EndGlobal

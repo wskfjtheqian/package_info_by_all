@@ -2,7 +2,7 @@
 GENERATED_PLUGINS=\
 	package_info_by_all \
 
-GENERATED_PLUGINS_DIR=flutter/ephemeral/.plugin_symlinks
+GENERATED_PLUGINS_DIR=flutter\ephemeral\.plugin_symlinks
 # A plugin library name plugin name with _plugin appended.
 GENERATED_PLUGIN_LIB_NAMES=$(foreach plugin,$(GENERATED_PLUGINS),$(plugin)_plugin)
 
@@ -24,4 +24,4 @@ $(OUT_DIR)/libpackage_info_by_all_plugin.so: | package_info_by_all
 $(GENERATED_PLUGINS):
 	make -C $(GENERATED_PLUGINS_DIR)/$@/linux \
 		OUT_DIR=$(OUT_DIR) \
-		FLUTTER_EPHEMERAL_DIR="$(abspath flutter/ephemeral)"
+		FLUTTER_EPHEMERAL_DIR="$(abspath flutter\ephemeral)"

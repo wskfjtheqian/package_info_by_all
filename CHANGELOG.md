@@ -1,3 +1,7 @@
-## 0.0.1
+## 1.0.1
 
-* TODO: Describe initial release.
+* Describe initial release.
+
+## 1.0.2
+
+* Add windows supported

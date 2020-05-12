@@ -24,7 +24,7 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(FlutterPluginName)_plugin.h">
+    <ClInclude Include="package_info_by_all_plugin.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,7 +38,7 @@
     <ClCompile Include="$(FLUTTER_EPHEMERAL_DIR)\cpp_client_wrapper\engine_method_result.cc">
       <Filter>Source Files\cpp_client_wrapper</Filter>
     </ClCompile>
-    <ClCompile Include="$(FlutterPluginName)_plugin.cpp">
+    <ClCompile Include="package_info_by_all_plugin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

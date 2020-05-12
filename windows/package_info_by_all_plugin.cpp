@@ -15,6 +15,59 @@
 #include <sstream>
 
 namespace {
+    std::string WStringToString(const std::wstring& wstr)
+    {
+        std::string str;
+        int nLen = (int)wstr.length();
+        str.resize(nLen, ' ');
+        WideCharToMultiByte(CP_ACP, 0, (LPCWSTR)wstr.c_str(), nLen, (LPSTR)str.c_str(), nLen, NULL, NULL);
+        return str;
+    }
+
+    std::string GetResource(std::wstring name)
+    {
+
+        TCHAR pFilePath[MAX_PATH] = { 0 };
+        DWORD dwRet = GetModuleFileName(NULL, pFilePath, MAX_PATH);
+        if (dwRet == 0)
+        {
+            return "";
+        }
+     
+        DWORD dwSize = GetFileVersionInfoSize(pFilePath, NULL);
+        if (dwSize == 0)
+        {
+            return "";
+        }
+
+        TCHAR* pBuf = (TCHAR*)malloc(dwSize + 1);
+        memset(pBuf, 0, dwSize + 1);
+
+        DWORD dwRtn = GetFileVersionInfo(pFilePath, NULL, dwSize, pBuf);
+        if (dwRtn == 0)
+        {
+            return "";
+        }
+        
+        LPVOID lpBuffer = NULL;
+        UINT uLen = 0;
+
+        std::wstring path = L"\\StringFileInfo\\080404b0\\";
+        path.append(name);
+
+        dwRtn = VerQueryValue(pBuf, path.c_str(), &lpBuffer, &uLen);
+        if (dwRtn == 0)
+        {
+            delete pBuf;
+            return "";
+        }
+
+        std::string retValue = WStringToString((TCHAR*)lpBuffer);
+        free( pBuf);
+
+        return retValue;
+    }
+
 
 class PackageInfoByAllPlugin : public flutter::Plugin {
  public:
@@ -56,21 +109,19 @@ PackageInfoByAllPlugin::~PackageInfoByAllPlugin() {}
 void PackageInfoByAllPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue> &method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+  if (method_call.method_name().compare("getAll") == 0) {
 
-  if (method_call.method_name().compare("getPlatformVersion") == 0) {
-    std::ostringstream version_stream;
-    version_stream << "Windows ";
-    if (IsWindows10OrGreater()) {
-      version_stream << "10+";
-    } else if (IsWindows8OrGreater()) {
-      version_stream << "8";
-    } else if (IsWindows7OrGreater()) {
-      version_stream << "7";
-    }
-    flutter::EncodableValue response(version_stream.str());
-    result->Success(&response);
-  } else {
-    result->NotImplemented();
+      flutter::EncodableMap map;
+      map[flutter::EncodableValue("appName")] = flutter::EncodableValue(GetResource(L"ProductName"));
+      map[flutter::EncodableValue("packageName")] = flutter::EncodableValue(GetResource(L"ProductName"));
+      map[flutter::EncodableValue("version")] = flutter::EncodableValue(GetResource(L"ProductVersion"));
+      map[flutter::EncodableValue("buildNumber")] = flutter::EncodableValue(GetResource(L"BuildNumber"));
+
+      flutter::EncodableValue response(map);
+      result->Success(&response);
+  }
+  else {
+      result->NotImplemented();
   }
 }
 
@@ -82,3 +133,4 @@ void PackageInfoByAllPluginRegisterWithRegistrar(
       flutter::PluginRegistrarManager::GetInstance()
           ->GetRegistrar<flutter::PluginRegistrarWindows>(registrar));
 }
+

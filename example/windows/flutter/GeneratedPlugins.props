@@ -3,6 +3,13 @@
   <ImportGroup Label="PropertySheets"/>
   <PropertyGroup Label="UserMacros"/>
   <PropertyGroup/>
-  <ItemDefinitionGroup/>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>flutter\ephemeral\.plugin_symlinks\package_info_by_all\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>package_info_by_all_plugin.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup/>
 </Project>

@@ -37,4 +37,12 @@ Example
  const char *kBuildNumber = "1";
 
 ## Windows
- Will be supported in subsequent releases
+ please add "BuildNumber" by at Runner.rc file
+
+ appName  by ProductName get
+
+ packageName by ProductName get
+
+ version by ProductVersion get
+
+ buildNumber by BuildNumber get

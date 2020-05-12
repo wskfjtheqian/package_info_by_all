@@ -1,6 +1,6 @@
 name: package_info_by_all
 description: get package info.
-version: 1.0.1
+version: 1.0.2
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -35,6 +35,8 @@ flutter:
       linux:
         pluginClass: PackageInfoByAllPlugin
       macos:
+        pluginClass: PackageInfoByAllPlugin
+      windows:
         pluginClass: PackageInfoByAllPlugin
       web:
         pluginClass: PackageInfoByWebPlugin
