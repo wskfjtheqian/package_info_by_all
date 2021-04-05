@@ -1,4 +1,4 @@
-#include "package_info_by_all_plugin.h"
+#include "include/package_info_by_all/package_info_by_all_plugin.h"
 
 // This must be included before many other Windows headers.
 #include <windows.h>
@@ -15,7 +15,8 @@
 #include <sstream>
 
 namespace {
-    std::string WStringToString(const std::wstring& wstr)
+
+ std::string WStringToString(const std::wstring& wstr)
     {
         std::string str;
         int nLen = (int)wstr.length();
@@ -33,7 +34,7 @@ namespace {
         {
             return "";
         }
-     
+
         DWORD dwSize = GetFileVersionInfoSize(pFilePath, NULL);
         if (dwSize == 0)
         {
@@ -48,7 +49,7 @@ namespace {
         {
             return "";
         }
-        
+
         LPVOID lpBuffer = NULL;
         UINT uLen = 0;
 
@@ -67,7 +68,6 @@ namespace {
 
         return retValue;
     }
-
 
 class PackageInfoByAllPlugin : public flutter::Plugin {
  public:
@@ -109,20 +109,20 @@ PackageInfoByAllPlugin::~PackageInfoByAllPlugin() {}
 void PackageInfoByAllPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue> &method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-  if (method_call.method_name().compare("getAll") == 0) {
+   if (method_call.method_name().compare("getAll") == 0) {
 
-      flutter::EncodableMap map;
-      map[flutter::EncodableValue("appName")] = flutter::EncodableValue(GetResource(L"ProductName"));
-      map[flutter::EncodableValue("packageName")] = flutter::EncodableValue(GetResource(L"ProductName"));
-      map[flutter::EncodableValue("version")] = flutter::EncodableValue(GetResource(L"ProductVersion"));
-      map[flutter::EncodableValue("buildNumber")] = flutter::EncodableValue(GetResource(L"BuildNumber"));
+       flutter::EncodableMap map;
+       map[flutter::EncodableValue("appName")] = flutter::EncodableValue(GetResource(L"ProductName"));
+       map[flutter::EncodableValue("packageName")] = flutter::EncodableValue(GetResource(L"ProductName"));
+       map[flutter::EncodableValue("version")] = flutter::EncodableValue(GetResource(L"ProductVersion"));
+       map[flutter::EncodableValue("buildNumber")] = flutter::EncodableValue(GetResource(L"BuildNumber"));
 
-      flutter::EncodableValue response(map);
-      result->Success(&response);
-  }
-  else {
-      result->NotImplemented();
-  }
+       flutter::EncodableValue response(map);
+       result->Success(&response);
+   }
+   else {
+       result->NotImplemented();
+   }
 }
 
 }  // namespace
@@ -133,4 +133,3 @@ void PackageInfoByAllPluginRegisterWithRegistrar(
       flutter::PluginRegistrarManager::GetInstance()
           ->GetRegistrar<flutter::PluginRegistrarWindows>(registrar));
 }
-

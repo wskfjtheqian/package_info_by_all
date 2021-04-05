@@ -43,4 +43,9 @@ class PackageInfoByPlatform extends PackageInfo {
     this.version,
     this.buildNumber,
   });
+
+  @override
+  String toString() {
+    return 'PackageInfoByPlatform{appName: $appName, packageName: $packageName, version: $version, buildNumber: $buildNumber}';
+  }
 }

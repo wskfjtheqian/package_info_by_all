@@ -13,16 +13,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-
-  @override
-  void initState() {
-    super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {}
+  String _platformVersion = '';
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +26,9 @@ class _MyAppState extends State<MyApp> {
           child: RaisedButton(
             onPressed: () {
               PackageInfo.get().then((value) {
-                print(value);
+                setState(() {
+                  _platformVersion = value.toString();
+                });
               });
             },
             child: Text('Running on: $_platformVersion\n'),

@@ -1,75 +1,71 @@
-#include "package_info_by_all_plugin.h"
+#include "include/package_info_by_all/package_info_by_all_plugin.h"
 
-#include <flutter/method_channel.h>
-#include <flutter/plugin_registrar_glfw.h>
-#include <flutter/standard_method_codec.h>
+#include <flutter_linux/flutter_linux.h>
+#include <gtk/gtk.h>
 #include <sys/utsname.h>
 
-#include <map>
-#include <memory>
-#include <sstream>
+#include <cstring>
 
-namespace {
+#define PACKAGE_INFO_BY_ALL_PLUGIN(obj) \
+  (G_TYPE_CHECK_INSTANCE_CAST((obj), package_info_by_all_plugin_get_type(), \
+                              PackageInfoByAllPlugin))
 
-    class PackageInfoByAllPlugin : public flutter::Plugin {
-    public:
-        static void RegisterWithRegistrar(flutter::PluginRegistrarGlfw *registrar);
+struct _PackageInfoByAllPlugin {
+  GObject parent_instance;
+};
 
-        PackageInfoByAllPlugin();
+G_DEFINE_TYPE(PackageInfoByAllPlugin, package_info_by_all_plugin, g_object_get_type())
 
-        virtual ~PackageInfoByAllPlugin();
+// Called when a method call is received from Flutter.
+static void package_info_by_all_plugin_handle_method_call(
+    PackageInfoByAllPlugin* self,
+    FlMethodCall* method_call) {
+  g_autoptr(FlMethodResponse) response = nullptr;
 
-    private:
-        // Called when a method is called on this plugin's channel from Dart.
-        void HandleMethodCall(
-                const flutter::MethodCall <flutter::EncodableValue> &method_call,
-                std::unique_ptr <flutter::MethodResult<flutter::EncodableValue>> result);
-    };
+  const gchar* method = fl_method_call_get_name(method_call);
 
-// static
-    void PackageInfoByAllPlugin::RegisterWithRegistrar(
-            flutter::PluginRegistrarGlfw *registrar) {
-        auto channel =
-                std::make_unique < flutter::MethodChannel < flutter::EncodableValue >> (
-                        registrar->messenger(), "package_info_by_all",
-                                &flutter::StandardMethodCodec::GetInstance());
-        auto plugin = std::make_unique<PackageInfoByAllPlugin>();
+  if (strcmp(method, "getAll") == 0) {
+    g_autoptr(FlValue) result = fl_value_new_map();
+    fl_value_set_string_take (result, "appName", fl_value_new_string (kAppName));
+    fl_value_set_string_take (result, "packageName", fl_value_new_string (kPackageName));
+    fl_value_set_string_take (result, "version", fl_value_new_string (kVersion));
+    fl_value_set_string_take (result, "buildNumber", fl_value_new_string (kBuildNumber));
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(result));
+  } else {
+    response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
+  }
 
-        channel->SetMethodCallHandler(
-                [plugin_pointer = plugin.get()](const auto &call, auto result) {
-                    plugin_pointer->HandleMethodCall(call, std::move(result));
-                });
+  fl_method_call_respond(method_call, response, nullptr);
+}
 
-        registrar->AddPlugin(std::move(plugin));
-    }
+static void package_info_by_all_plugin_dispose(GObject* object) {
+  G_OBJECT_CLASS(package_info_by_all_plugin_parent_class)->dispose(object);
+}
 
-    PackageInfoByAllPlugin::PackageInfoByAllPlugin() {}
+static void package_info_by_all_plugin_class_init(PackageInfoByAllPluginClass* klass) {
+  G_OBJECT_CLASS(klass)->dispose = package_info_by_all_plugin_dispose;
+}
 
-    PackageInfoByAllPlugin::~PackageInfoByAllPlugin() {}
+static void package_info_by_all_plugin_init(PackageInfoByAllPlugin* self) {}
 
-    void PackageInfoByAllPlugin::HandleMethodCall(
-            const flutter::MethodCall <flutter::EncodableValue> &method_call,
-            std::unique_ptr <flutter::MethodResult<flutter::EncodableValue>> result) {
-        if (method_call.method_name().compare("getAll") == 0) {
+static void method_call_cb(FlMethodChannel* channel, FlMethodCall* method_call,
+                           gpointer user_data) {
+  PackageInfoByAllPlugin* plugin = PACKAGE_INFO_BY_ALL_PLUGIN(user_data);
+  package_info_by_all_plugin_handle_method_call(plugin, method_call);
+}
 
-            flutter::EncodableMap map;
-            map[flutter::EncodableValue("appName")] = flutter::EncodableValue(kAppName);
-            map[flutter::EncodableValue("packageName")] = flutter::EncodableValue(kPackageName);
-            map[flutter::EncodableValue("version")] = flutter::EncodableValue(kVersion);
-            map[flutter::EncodableValue("buildNumber")] = flutter::EncodableValue(kBuildNumber);
+void package_info_by_all_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
+  PackageInfoByAllPlugin* plugin = PACKAGE_INFO_BY_ALL_PLUGIN(
+      g_object_new(package_info_by_all_plugin_get_type(), nullptr));
 
-            flutter::EncodableValue response(map);
-            result->Success(&response);
-        } else {
-            result->NotImplemented();
-        }
-    }
+  g_autoptr(FlStandardMethodCodec) codec = fl_standard_method_codec_new();
+  g_autoptr(FlMethodChannel) channel =
+      fl_method_channel_new(fl_plugin_registrar_get_messenger(registrar),
+                            "package_info_by_all",
+                            FL_METHOD_CODEC(codec));
+  fl_method_channel_set_method_call_handler(channel, method_call_cb,
+                                            g_object_ref(plugin),
+                                            g_object_unref);
 
-}  // namespace
-
-void PackageInfoByAllPluginRegisterWithRegistrar(
-        FlutterDesktopPluginRegistrarRef registrar) {
-    PackageInfoByAllPlugin::RegisterWithRegistrar(
-            flutter::PluginRegistrarManager::GetInstance()
-                    ->GetRegistrar<flutter::PluginRegistrarGlfw>(registrar));
+  g_object_unref(plugin);
 }

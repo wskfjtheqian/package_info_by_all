@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:html' as html;
 
+import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/src/plugin_registry.dart';
 
 import '../package_info_by_all.dart';
@@ -19,24 +21,14 @@ class PackageInfoByWebPlugin extends PackageInfoPlatform {
       return _fromPlatform;
     }
 
-    var completer = new Completer<PackageInfo>();
-    var request = html.HttpRequest.request("manifest.json", responseType: "json").then((value) {
-      try {
-        var map = value.response as Map;
-        _fromPlatform = PackageInfoByWeb(
-          appName: map["short_name"],
-          packageName: map["name"],
-          version: map["version"],
-          buildNumber: map["build_number"],
-        );
-        completer.complete(_fromPlatform);
-      } catch (e) {
-        completer.complete(null);
-      }
-    }, onError: () {
-      completer.complete(null);
-    });
-    return completer.future;
+    var version = await rootBundle.loadString('../version.json');
+    var map = json.decode(version);
+    return PackageInfoByWeb(
+      appName: map["app_name"],
+      packageName: map["app_name"],
+      version: map["version"],
+      buildNumber: map["build_number"],
+    );
   }
 }
 
@@ -55,4 +47,9 @@ class PackageInfoByWeb extends PackageInfo {
     this.version,
     this.buildNumber,
   });
+
+  @override
+  String toString() {
+    return 'PackageInfoByWeb{appName: $appName, packageName: $packageName, version: $version, buildNumber: $buildNumber}';
+  }
 }
