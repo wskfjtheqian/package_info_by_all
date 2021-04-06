@@ -13,61 +13,102 @@
 #include <map>
 #include <memory>
 #include <sstream>
+#include <strsafe.h>
+
+#pragma comment(lib, "version.lib")
 
 namespace {
+    class FileInfo {
+        void* pBuf =nullptr;
 
- std::string WStringToString(const std::wstring& wstr)
-    {
-        std::string str;
-        int nLen = (int)wstr.length();
-        str.resize(nLen, ' ');
-        WideCharToMultiByte(CP_ACP, 0, (LPCWSTR)wstr.c_str(), nLen, (LPSTR)str.c_str(), nLen, NULL, NULL);
-        return str;
-    }
+        struct LANGANDCODEPAGE {
+            WORD wLanguage;
+            WORD wCodePage;
+        } *lpTranslate;
 
-    std::string GetResource(std::wstring name)
-    {
+        UINT cbTranslate = 0;
+    public:
+        FileInfo() {
+            TCHAR pFilePath[MAX_PATH] = { 0 };
+            DWORD dwRet = GetModuleFileName(NULL, pFilePath, MAX_PATH);
+			if (dwRet == 0)
+            {
+                return ;
+            }
 
-        TCHAR pFilePath[MAX_PATH] = { 0 };
-        DWORD dwRet = GetModuleFileName(NULL, pFilePath, MAX_PATH);
-        if (dwRet == 0)
-        {
-            return "";
+            DWORD dwSize = GetFileVersionInfoSize(pFilePath, NULL);
+            if (dwSize == 0)
+            {
+                return ;
+            }
+
+            pBuf = malloc(static_cast<size_t>(dwSize) + 1);
+            if (nullptr == pBuf) {
+                return;
+            }
+
+            memset(pBuf, static_cast<size_t>(0), static_cast<size_t>(dwSize ) + 1);
+
+            DWORD dwRtn = GetFileVersionInfo(pFilePath, NULL, static_cast<size_t>(dwSize), pBuf);
+            if (dwRtn == 0)
+            {
+                return;
+            }
+
+            VerQueryValue(pBuf,TEXT("\\VarFileInfo\\Translation"), (LPVOID*)&lpTranslate,  &cbTranslate);
         }
 
-        DWORD dwSize = GetFileVersionInfoSize(pFilePath, NULL);
-        if (dwSize == 0)
+        ~FileInfo()
         {
-            return "";
+            if (nullptr != pBuf) {
+                free(pBuf);
+            }
+            pBuf = nullptr;
         }
 
-        TCHAR* pBuf = (TCHAR*)malloc(dwSize + 1);
-        memset(pBuf, 0, dwSize + 1);
-
-        DWORD dwRtn = GetFileVersionInfo(pFilePath, NULL, dwSize, pBuf);
-        if (dwRtn == 0)
+        std::string WStringToString(const std::wstring& wstr)
         {
-            return "";
+            std::string str;
+            int nLen = (int)wstr.length();
+            str.resize(nLen, ' ');
+            WideCharToMultiByte(CP_ACP, 0, (LPCWSTR)wstr.c_str(), nLen, (LPSTR)str.c_str(), nLen, NULL, NULL);
+            return str;
         }
 
-        LPVOID lpBuffer = NULL;
-        UINT uLen = 0;
-
-        std::wstring path = L"\\StringFileInfo\\080404b0\\";
-        path.append(name);
-
-        dwRtn = VerQueryValue(pBuf, path.c_str(), &lpBuffer, &uLen);
-        if (dwRtn == 0)
+        std::string GetResource(std::wstring name)
         {
-            delete pBuf;
-            return "";
+            if (nullptr == pBuf||0== cbTranslate) {
+                return "";
+            }
+           
+
+            LPVOID lpBuffer = NULL;
+            TCHAR pPath[MAX_PATH] = { 0 };
+            UINT uLen = 0;
+            UINT dwRtn = 0;
+            
+            std::wstring path = L"\\StringFileInfo\\%04x%04x\\";
+            path.append(name);
+
+            dwRtn = StringCchPrintf(pPath, 50,
+                path.c_str(),
+                lpTranslate[0].wLanguage,
+                lpTranslate[0].wCodePage);
+            if (dwRtn != 0)
+            {
+                return "";
+            }
+
+            dwRtn = VerQueryValue(pBuf, pPath, &lpBuffer, &uLen);
+            if (dwRtn == 0)
+            {
+                return "";
+            }
+
+            std::string retValue = WStringToString((TCHAR*)lpBuffer);
+            return retValue;
         }
-
-        std::string retValue = WStringToString((TCHAR*)lpBuffer);
-        free( pBuf);
-
-        return retValue;
-    }
+    };
 
 class PackageInfoByAllPlugin : public flutter::Plugin {
  public:
@@ -110,15 +151,15 @@ void PackageInfoByAllPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue> &method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
    if (method_call.method_name().compare("getAll") == 0) {
-
        flutter::EncodableMap map;
-       map[flutter::EncodableValue("appName")] = flutter::EncodableValue(GetResource(L"ProductName"));
-       map[flutter::EncodableValue("packageName")] = flutter::EncodableValue(GetResource(L"ProductName"));
-       map[flutter::EncodableValue("version")] = flutter::EncodableValue(GetResource(L"ProductVersion"));
-       map[flutter::EncodableValue("buildNumber")] = flutter::EncodableValue(GetResource(L"BuildNumber"));
+       FileInfo info;
+       map[flutter::EncodableValue("appName")] = flutter::EncodableValue(info.GetResource(L"ProductName"));
+       map[flutter::EncodableValue("packageName")] = flutter::EncodableValue(info.GetResource(L"OriginalFilename"));
+       map[flutter::EncodableValue("version")] = flutter::EncodableValue(info.GetResource(L"ProductVersion"));
+       map[flutter::EncodableValue("buildNumber")] = flutter::EncodableValue(info.GetResource(L"BuildNumber"));
 
        flutter::EncodableValue response(map);
-       result->Success(&response);
+       result->Success(response);
    }
    else {
        result->NotImplemented();
