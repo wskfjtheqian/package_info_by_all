@@ -1,6 +1,7 @@
 name: package_info_by_all
 description: get package info.
-version: 1.0.2
+homepage: https://github.com/wskfjtheqian/package_info_by_all
+version: 1.0.3
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
